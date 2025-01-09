@@ -2,4 +2,8 @@
 
 set -e
 
-service tomcat10 stop
+TOMCAT_DIR="/opt/tomcat"
+
+# Stop Tomcat
+sudo $TOMCAT_DIR/bin/shutdown.sh || echo "Tomcat is not running."
+echo "Tomcat stopped successfully."
