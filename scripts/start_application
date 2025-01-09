@@ -28,8 +28,23 @@ fi
 cp $WAR_STAGED_LOCATION $CATALINA_HOME/webapps/$CONTEXT_PATH.war
 
 # Configure the Tomcat server HTTP connector
-{ which xsltproc; } || { yum install xsltproc; } 
-cp $CATALINA_HOME/conf/server.xml $CATALINA_HOME/conf/server.xml.bak
-xsltproc $HTTP_PORT_CONFIG_XSL_LOCATION $CATALINA_HOME/conf/server.xml.bak > $CATALINA_HOME/conf/server.xml
+TOMCAT_DIR="/opt/tomcat"
+CONF_FILE="$TOMCAT_DIR/conf/server.xml"
+HTTP_PORT=8080  # Define the desired HTTP port
 
-service tomcat7 start
+# Update the server.xml file with the desired HTTP connector configuration
+if ! grep -q "Connector port=\"$HTTP_PORT\"" "$CONF_FILE"; then
+  echo "Configuring HTTP connector in server.xml for port $HTTP_PORT..."
+  sudo sed -i "/<Service name=\"Catalina\">/a \
+    <Connector port=\"$HTTP_PORT\" protocol=\"HTTP/1.1\" \
+               connectionTimeout=\"20000\" \
+               redirectPort=\"8443\" />" "$CONF_FILE"
+else
+  echo "HTTP connector for port $HTTP_PORT is already configured."
+fi
+
+# Start Tomcat
+echo "Starting Tomcat server..."
+sudo $TOMCAT_DIR/bin/startup.sh
+echo "Tomcat started successfully."
+
