@@ -12,6 +12,7 @@ hooks:
   BeforeInstall:
     - location: scripts/install_dependencies
       timeout: 300
+      runas: root
   ApplicationStart:
     - location: scripts/write_codedeploy_config.sh
     - location: scripts/start_application
