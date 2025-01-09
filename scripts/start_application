@@ -28,7 +28,7 @@ fi
 cp $WAR_STAGED_LOCATION $CATALINA_HOME/webapps/$CONTEXT_PATH.war
 
 # Configure the Tomcat server HTTP connector
-sudo sed -i 's/port="8080"/port="8080"/' $INSTALL_DIR/conf/server.xml
+sudo sed -i 's/port="8080"/port="8080"/' $CATALINA_HOME/conf/server.xml
 
 # Cleanup
 echo "Dependencies installed and Tomcat $TOMCAT_VERSION set up successfully."
