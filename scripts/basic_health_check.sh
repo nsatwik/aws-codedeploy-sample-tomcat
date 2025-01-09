@@ -2,7 +2,7 @@
 
 # Set variables for the Tomcat service and application URL
 TOMCAT_SERVICE="tomcat"  # This might be different depending on your system
-TOMCAT_STATUS_URL="http://localhost:8080/health"  # Replace with your actual health check URL if available
+TOMCAT_STATUS_URL="http://13.126.26.20:8080/health"  # Replace with your actual health check URL if available
 
 # Function to check if Tomcat service is running
 check_tomcat_service() {
