@@ -3,59 +3,34 @@
 # Exit on any error
 set -e
 
-echo "Updating package repositories..."
-sudo apt update -y
+echo "Updating package repository..."
+sudo yum update -y
 
-echo "Installing Java JDK (required for Tomcat)..."
-sudo apt install -y openjdk-11-jdk
+echo "Installing required dependencies..."
+sudo yum install -y java-17-amazon-corretto wget unzip
 
 echo "Verifying Java installation..."
 java -version
 
-echo "Creating directory for Tomcat..."
-TOMCAT_VERSION=10.1.34
-TOMCAT_DIR=/opt/tomcat
-sudo mkdir -p $TOMCAT_DIR
+TOMCAT_VERSION="10.1.34"
+TOMCAT_DOWNLOAD_URL="https://dlcdn.apache.org/tomcat/tomcat-10/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz"
+TOMCAT_INSTALL_DIR="/opt/tomcat"
 
 echo "Downloading Tomcat version $TOMCAT_VERSION..."
-TOMCAT_TAR_URL="https://dlcdn.apache.org/tomcat/tomcat-10/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz"
-curl -o /tmp/apache-tomcat-$TOMCAT_VERSION.tar.gz $TOMCAT_TAR_URL
+wget -q $TOMCAT_DOWNLOAD_URL -O /tmp/apache-tomcat-$TOMCAT_VERSION.tar.gz
 
-echo "Extracting Tomcat archive..."
-sudo tar -xzf /tmp/apache-tomcat-$TOMCAT_VERSION.tar.gz -C $TOMCAT_DIR --strip-components=1
+echo "Creating Tomcat installation directory..."
+sudo mkdir -p $TOMCAT_INSTALL_DIR
 
-echo "Setting permissions for Tomcat..."
-sudo chmod -R 755 $TOMCAT_DIR
-sudo chown -R $USER:$USER $TOMCAT_DIR
+echo "Extracting Tomcat..."
+sudo tar -xzf /tmp/apache-tomcat-$TOMCAT_VERSION.tar.gz -C $TOMCAT_INSTALL_DIR --strip-components=1
 
-echo "Cleaning up temporary files..."
-rm /tmp/apache-tomcat-$TOMCAT_VERSION.tar.gz
+echo "Setting permissions for Tomcat files..."
+sudo chmod -R +x $TOMCAT_INSTALL_DIR/bin
 
-echo "Creating systemd service file for Tomcat..."
-sudo bash -c "cat > /etc/systemd/system/tomcat.service" <<EOF
-[Unit]
-Description=Apache Tomcat
-After=network.target
+echo "Cleaning up downloaded files..."
+rm -f /tmp/apache-tomcat-$TOMCAT_VERSION.tar.gz
 
-[Service]
-Type=forking
-Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-Environment=CATALINA_HOME=$TOMCAT_DIR
-ExecStart=$TOMCAT_DIR/bin/startup.sh
-ExecStop=$TOMCAT_DIR/bin/shutdown.sh
-User=$USER
-Group=$USER
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-echo "Reloading systemd daemon and enabling Tomcat service..."
-sudo systemctl daemon-reload
-sudo systemctl enable tomcat
-
-echo "Starting Tomcat service..."
-sudo systemctl start tomcat
-
-echo "Installation completed. Tomcat is running."
+echo "Tomcat $TOMCAT_VERSION installed successfully in $TOMCAT_INSTALL_DIR."
+echo "You can start Tomcat using the following command:"
+echo "  $TOMCAT_INSTALL_DIR/bin/startup.sh"
