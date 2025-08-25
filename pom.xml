@@ -10,6 +10,10 @@
   
   <properties>
     <spring.version>5.3.20</spring.version>
+    <!-- ✅ Switch to Java 11 -->
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   
   <dependencyManagement>
@@ -82,17 +86,22 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+
   <build>
     <finalName>SampleMavenTomcatApp</finalName>
     <plugins>
+      <!-- ✅ Updated Compiler Plugin -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.5.1</version>
+        <version>3.8.1</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>11</source>
+          <target>11</target>
+          <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
@@ -103,6 +112,7 @@
           <wtpversion>2.0</wtpversion>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat7-maven-plugin</artifactId>
